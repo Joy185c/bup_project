@@ -27,8 +27,15 @@ export function Layout() {
       <div className="flex flex-1 flex-col overflow-hidden w-full relative z-10">
         <TopHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
         <main className="flex-1 overflow-y-auto bg-slate-50/85 backdrop-blur-sm p-4 sm:p-6 lg:p-8 w-full">
-          <div className="mx-auto max-w-7xl">
-            <Outlet />
+          <div className="mx-auto max-w-7xl flex flex-col min-h-full">
+            <div className="flex-1 pb-8">
+              <Outlet />
+            </div>
+            <footer className="py-6 border-t border-slate-200/60 text-center mt-auto">
+              <p className="text-sm text-slate-500">
+                Developed by <span className="font-semibold text-slate-700">cisnexus team</span>
+              </p>
+            </footer>
           </div>
         </main>
       </div>
