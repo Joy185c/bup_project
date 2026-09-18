@@ -15,7 +15,7 @@ export const teamMembers: TeamMember[] = [
     focusArea: "LLM Guardrails & API Architecture"
   },
   {
-    name: "Joy Sarker",
+    name: "Joy Kumar Yuv",
     role: "Full Stack Engineer & Optimization Specialist",
     image: "/team/joy-sarker.jpg",
     description: "Engineered the Mixed-Integer Linear Programming (MILP) formulation with PuLP & CBC and full-stack system deployment.",
