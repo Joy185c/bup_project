@@ -32,9 +32,8 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const sidebarContent = (
     <div className="flex h-full w-64 flex-col border-r border-slate-200 bg-white/75 backdrop-blur-md">
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
-        <div className="flex items-center">
-          <Zap className="h-8 w-8 text-green-700" />
-          <span className="ml-3 text-xl font-bold tracking-tight text-slate-900">GridWise</span>
+        <div className="flex items-center h-full py-2">
+          <img src="/logo.png" alt="Nexus" className="h-full object-contain max-h-12" />
         </div>
         {onClose && (
           <button 
