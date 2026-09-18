@@ -5,6 +5,7 @@ import { ProgressSteps } from '../components/optimization/ProgressSteps';
 import { DirectiveCard } from '../components/optimization/DirectiveCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { optimizeEnergy } from '../services/api';
+import toast from 'react-hot-toast';
 import { useAppStore } from '../store/appStore';
 import { SAMPLE_HOURS, SAMPLE_BATTERY, SAMPLE_SCENARIO_ID } from '../data/sampleScenario';
 import { AlertTriangle, ShieldCheck, ArrowRight } from 'lucide-react';
@@ -55,7 +56,9 @@ export default function OptimizePage() {
       
     } catch (err: any) {
       setStatus('error');
-      setErrorMsg(err.message || 'An unexpected error occurred.');
+      const msg = err.message || 'An unexpected error occurred.';
+      setErrorMsg(msg);
+      toast.error(msg, { duration: 5000 });
     }
   };
 
