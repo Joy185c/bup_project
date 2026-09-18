@@ -48,12 +48,11 @@ export function AICopilot({ onOptimize, isLoading }: AICopilotProps) {
         <CardContent className="pt-6">
           <div className="space-y-4">
             <textarea
-              className="w-full h-40 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono resize-none"
+              className="w-full h-80 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono resize-none"
               placeholder="e.g. Reduce solar usage from 11–13 and maintain at least 40 kWh battery reserve during evening hours."
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               disabled={isLoading}
-              maxLength={25000}
             />
             
             <p className="text-xs text-slate-500 flex items-center">
