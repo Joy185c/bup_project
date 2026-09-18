@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Zap, List, LineChart, History, Activity, X, AlertCircle, Loader2 } from 'lucide-react';
+import { Home, LayoutDashboard, Zap, List, LineChart, History, Activity, X, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { checkHealth } from '../../services/api';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Optimize Energy', href: '/optimize', icon: Zap },
   { name: 'Energy Plan', href: '/plan', icon: List },
   { name: 'Analytics', href: '/analytics', icon: LineChart },
