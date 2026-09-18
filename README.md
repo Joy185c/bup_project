@@ -1,6 +1,8 @@
 <div align="center">
-
-# ⚡ GridWise: Smart Campus Energy Optimization
+<a href="https://github.com/nafisatabassumnusrat/GridWise">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&section=header&reversal=false&text=GridWise%3A&textBg=false&fontSize=70&fontAlign=50&fontAlignY=50&rotate=0&strokeWidth=0&descSize=20&descAlign=50&descAlignY=60" width="100%"/>
+</a>
+#Smart Campus Energy Optimization
 
 ### AI-Assisted, Deterministically Validated MILP Microgrid Optimization Engine
 
