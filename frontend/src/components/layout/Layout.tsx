@@ -31,9 +31,9 @@ export function Layout() {
             <div className="flex-1 pb-8">
               <Outlet />
             </div>
-            <footer className="py-6 border-t border-slate-200/60 text-center mt-auto">
-              <p className="text-sm text-slate-500">
-                Developed by <span className="font-semibold text-slate-700">cisnexus team</span>
+            <footer className="pt-8 pb-2 border-t border-slate-200/60 text-center mt-auto">
+              <p className="text-xs text-slate-400">
+                Developed by <span className="font-semibold text-slate-500 tracking-wider">CISNEXUS</span>
               </p>
             </footer>
           </div>
