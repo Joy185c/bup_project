@@ -30,7 +30,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   }, [isOpen]);
 
   const sidebarContent = (
-    <div className="flex h-full w-64 flex-col border-r border-slate-200 bg-white">
+    <div className="flex h-full w-64 flex-col border-r border-slate-200 bg-white/75 backdrop-blur-md">
       <div className="flex h-16 shrink-0 items-center justify-between px-6">
         <div className="flex items-center">
           <Zap className="h-8 w-8 text-green-700" />
