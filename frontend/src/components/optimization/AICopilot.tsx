@@ -53,7 +53,7 @@ export function AICopilot({ onOptimize, isLoading }: AICopilotProps) {
               value={notesText}
               onChange={(e) => setNotesText(e.target.value)}
               disabled={isLoading}
-              maxLength={1500}
+              maxLength={5000}
             />
             
             <p className="text-xs text-slate-500 flex items-center">
