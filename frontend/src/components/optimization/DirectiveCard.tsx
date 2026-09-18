@@ -58,7 +58,7 @@ export function DirectiveCard({ directive }: DirectiveCardProps) {
         </p>
         
         {directive.applies && directive.structured_adjustment && (
-          <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100">
             <div className="text-xs">
               <span className="text-slate-500 block">Active Hours:</span>
               <span className="font-medium text-slate-900">{formatHoursList(directive.structured_adjustment.hours)}</span>

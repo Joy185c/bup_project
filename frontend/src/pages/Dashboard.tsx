@@ -14,14 +14,14 @@ export default function Dashboard() {
     <div className="space-y-8 animate-in fade-in duration-500">
       
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-slate-900 px-8 py-12 shadow-xl sm:px-12 sm:py-16">
+      <div className="relative overflow-hidden rounded-2xl bg-slate-900 px-6 py-8 shadow-xl sm:px-12 sm:py-16">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-green-300 via-green-600 to-transparent"></div>
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center space-x-2 rounded-full bg-green-500/20 px-3 py-1 text-sm font-medium text-green-300 border border-green-500/30 mb-6">
             <span className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
             <span>Optimization Engine Online</span>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl mb-4">
+          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl mb-4">
             Smart Energy, Optimized by AI
           </h2>
           <p className="text-lg text-slate-300 mb-8 max-w-xl">

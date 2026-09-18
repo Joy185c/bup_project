@@ -61,7 +61,7 @@ export function KPICards({ data }: KPICardsProps) {
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {kpis.map((kpi, i) => (
         <Card key={i}>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center">
               <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${kpi.bg}`}>
                 <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
