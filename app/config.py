@@ -33,7 +33,7 @@ LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "groq" if GROQ_API_KEY else "opena
 # --- LLM Model defaults per provider ---
 _DEFAULT_MODELS = {
     "openai": "gpt-4o",
-    "groq": "llama-3.3-70b-versatile",
+    "groq": "llama3-70b-8192",
 }
 LLM_MODEL: str = os.getenv("LLM_MODEL", _DEFAULT_MODELS.get(LLM_PROVIDER, "gpt-4o"))
 
