@@ -12,7 +12,7 @@ export function Layout() {
       <div 
         className="absolute inset-0 z-0 pointer-events-none opacity-[0.04] mix-blend-multiply"
         style={{
-          backgroundImage: "url('/bg-watermark.jpg')",
+          backgroundImage: "url('/bg-watermark.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
