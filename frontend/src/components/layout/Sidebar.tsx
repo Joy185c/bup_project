@@ -102,7 +102,12 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         </nav>
       </div>
       <div className="shrink-0 border-t border-slate-200 p-4">
-        <div className="flex items-center text-sm font-medium text-slate-700">
+        <a 
+          href="/health" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center text-sm font-medium text-slate-700 hover:text-slate-900 cursor-pointer transition-colors"
+        >
           {healthStatus === 'checking' && (
             <>
               <Loader2 className="mr-2 h-5 w-5 text-slate-400 animate-spin" />
@@ -121,7 +126,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               System Offline
             </>
           )}
-        </div>
+        </a>
       </div>
     </div>
   );
