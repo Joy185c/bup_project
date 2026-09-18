@@ -10,7 +10,7 @@ export function Layout() {
     <div className="flex h-screen bg-slate-50 font-sans text-slate-900 overflow-hidden relative">
       {/* Subtle Premium Watermark Background */}
       <div 
-        className="absolute inset-0 z-0 pointer-events-none opacity-[0.04] mix-blend-multiply"
+        className="absolute inset-0 z-0 pointer-events-none opacity-15 mix-blend-multiply"
         style={{
           backgroundImage: "url('/bg-watermark.png')",
           backgroundSize: 'cover',
