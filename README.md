@@ -1,10 +1,10 @@
 <div align="center">
 <a href="https://github.com/nafisatabassumnusrat/GridWise">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&section=header&reversal=false&text=GridWise%3A&textBg=false&fontSize=70&fontAlign=50&fontAlignY=50&rotate=0&strokeWidth=0&descSize=20&descAlign=50&descAlignY=60" width="100%"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=300&color=gradient&section=header&reversal=false&text=GridWise%3A+Smart+Campus+Energy+Optimization&textBg=false&fontSize=35&fontAlign=50&fontAlignY=50&rotate=0&strokeWidth=0&descSize=20&descAlign=50&descAlignY=60" width="100%"/>
 
-###Smart Campus Energy Optimization
 
-### AI-Assisted, Deterministically Validated MILP Microgrid Optimization Engine
+
+###  AI-Assisted, Deterministically Validated MILP Microgrid Optimization Engine
 
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
