@@ -1,6 +1,7 @@
 import React from 'react';
-import { User, Bell, ChevronDown, Menu } from 'lucide-react';
+import { User, ChevronDown, Menu } from 'lucide-react';
 import { useAppStore } from '../../store/appStore';
+import { NotificationBell } from './NotificationBell';
 
 interface TopHeaderProps {
   onMenuClick?: () => void;
@@ -31,10 +32,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
         )}
       </div>
       <div className="flex items-center space-x-2 sm:space-x-4 ml-4">
-        <button className="rounded-full p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-500 hidden sm:block">
-          <Bell className="h-5 w-5" />
-        </button>
-
+        <NotificationBell />
       </div>
     </header>
   );
