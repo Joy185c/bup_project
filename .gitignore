@@ -4,8 +4,11 @@ __pycache__/
 *$py.class
 *.so
 .Python
+# build artifacts
 build/
-dist/
+# dist/ ignored except frontend/dist
+!frontend/dist/
+!frontend/dist/**
 *.egg-info/
 .eggs/
 

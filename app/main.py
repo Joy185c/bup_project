@@ -376,6 +376,9 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if not os.path.exists(frontend_dist):
+    frontend_dist = os.path.join(os.path.dirname(__file__), "..", "public")
+
 if os.path.exists(frontend_dist):
     assets_dir = os.path.join(frontend_dist, "assets")
     if os.path.exists(assets_dir):
