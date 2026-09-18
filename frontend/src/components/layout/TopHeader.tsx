@@ -34,13 +34,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
         <button className="rounded-full p-1 text-slate-400 hover:bg-slate-50 hover:text-slate-500 hidden sm:block">
           <Bell className="h-5 w-5" />
         </button>
-        <div className="flex items-center space-x-2 sm:border-l border-slate-200 sm:pl-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700">
-            <User className="h-5 w-5" />
-          </div>
-          <span className="text-sm font-medium text-slate-700 hidden sm:block">Admin</span>
-          <ChevronDown className="h-4 w-4 text-slate-400 hidden sm:block" />
-        </div>
+
       </div>
     </header>
   );

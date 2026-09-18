@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Zap, List, LineChart, History, Activity, X } from 'lucide-react';
+import { LayoutDashboard, Zap, List, LineChart, History, Activity, X, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { checkHealth } from '../../services/api';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -28,6 +29,27 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  const [healthStatus, setHealthStatus] = useState<'checking' | 'healthy' | 'error'>('checking');
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const verifyHealth = async () => {
+      const isHealthy = await checkHealth();
+      if (mounted) {
+        setHealthStatus(isHealthy ? 'healthy' : 'error');
+      }
+    };
+
+    verifyHealth();
+    const interval = setInterval(verifyHealth, 30000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const sidebarContent = (
     <div className="flex h-full w-64 flex-col border-r border-slate-200 bg-white/75 backdrop-blur-md">
@@ -80,8 +102,24 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       </div>
       <div className="shrink-0 border-t border-slate-200 p-4">
         <div className="flex items-center text-sm font-medium text-slate-700">
-          <Activity className="mr-2 h-5 w-5 text-green-500" />
-          System Healthy
+          {healthStatus === 'checking' && (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 text-slate-400 animate-spin" />
+              Checking System...
+            </>
+          )}
+          {healthStatus === 'healthy' && (
+            <>
+              <Activity className="mr-2 h-5 w-5 text-green-500" />
+              System Healthy
+            </>
+          )}
+          {healthStatus === 'error' && (
+            <>
+              <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
+              System Offline
+            </>
+          )}
         </div>
       </div>
     </div>
