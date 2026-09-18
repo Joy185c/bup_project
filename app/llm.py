@@ -217,6 +217,7 @@ def _call_groq(notes: list[str]) -> LLMResponse:
             {"role": "user", "content": _user_prompt(notes)},
         ],
         temperature=0.0,
+        max_tokens=1500,
     )
 
     raw = response.choices[0].message.content
