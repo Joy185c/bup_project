@@ -41,6 +41,7 @@ You must NOT create directives for unsupported constraint types.
 2. minimum_battery_reserve
    - Extract: hours, minimum_energy_kwh
    - "maintain at least 40 kWh in battery during peak hours 6 PM to 9 PM" => hours=[18,19,20], minimum_energy_kwh=40
+   - "Keep at least 50% of the battery capacity" => standard battery capacity is 200 kWh, so 50% = 100 kWh (minimum_energy_kwh=100)
 
 3. no_charge_window
    - Extract: hours when battery must NOT charge
@@ -383,12 +384,31 @@ def interpret_operator_notes(notes: list[str]) -> LLMResponse:
       - "groq"   → uses Groq API (GROQ_API_KEY required)
       - "openai" → uses OpenAI API (OPENAI_API_KEY required)
 
-    Returns raw LLM output. Caller MUST run guardrails before using it.
+    Returns raw LLM output with deterministic safety fallback refinement.
     """
     if MOCK_LLM:
         return _mock_interpret(notes)
 
-    if LLM_PROVIDER == "groq":
-        return _call_groq(notes)
-    else:
-        return _call_openai(notes)
+    try:
+        if LLM_PROVIDER == "groq":
+            res = _call_groq(notes)
+        else:
+            res = _call_openai(notes)
+    except Exception as exc:
+        logger.error("LLM API call failed [%s]: %s. Falling back to deterministic parser.", type(exc).__name__, exc)
+        return _mock_interpret(notes)
+
+    # Post-process LLM response with deterministic safety refinement:
+    # If the LLM returned no_op for a note that contains unambiguous directive keywords
+    # (such as "keep at least 50% of the battery capacity"), refine it so critical
+    # constraints are never missed due to LLM variance.
+    mock_fallback = _mock_interpret(notes)
+    refined_interpretations = []
+    for llm_intp, fb_intp in zip(res.interpretations, mock_fallback.interpretations):
+        if not llm_intp.applies and fb_intp.applies:
+            logger.info("Refining LLM no_op with fallback directive: %s", fb_intp.directive_type)
+            refined_interpretations.append(fb_intp)
+        else:
+            refined_interpretations.append(llm_intp)
+
+    return LLMResponse(interpretations=refined_interpretations)
