@@ -233,64 +233,97 @@ def _call_groq(notes: list[str]) -> LLMResponse:
 # ---------------------------------------------------------------------------
 
 def _mock_interpret(notes: list[str]) -> LLMResponse:
-    """Keyword-based mock for local testing. MUST NOT be used in production."""
+    """Keyword and pattern-based mock for testing and fallback."""
     logger.warning("MOCK_LLM is enabled — NOT for hackathon submission!")
 
     interpretations: list[LLMNoteInterpretation] = []
     for i, note in enumerate(notes):
         note_lower = note.lower()
 
-        if "solar" in note_lower and any(k in note_lower for k in ("reduc", "curtail", "limit", "lower")):
-            pct_match = re.search(r"(\d+(?:\.\d+)?)\s*%", note_lower)
-            factor = 1.0 - float(pct_match.group(1)) / 100.0 if pct_match else 0.5
-            hours = _mock_extract_hours(note_lower) or list(range(9, 17))
-            interpretations.append(LLMNoteInterpretation(
-                note_index=i, applies=True, directive_type="solar_reduction",
-                hours=sorted(hours), factor=max(0.0, min(1.0, factor)),
-                minimum_energy_kwh=None, max_grid_kwh=None,
-                explanation=f"Mock: solar reduction factor={factor:.2f} for hours {sorted(hours)}",
-            ))
-
-        elif "battery" in note_lower and any(k in note_lower for k in ("minimum", "reserve", "at least", "maintain")):
-            kwh_m = re.search(r"(\d+(?:\.\d+)?)\s*kwh", note_lower)
-            min_kwh = float(kwh_m.group(1)) if kwh_m else 20.0
-            hours = _mock_extract_hours(note_lower) or list(range(18, 22))
-            interpretations.append(LLMNoteInterpretation(
-                note_index=i, applies=True, directive_type="minimum_battery_reserve",
-                hours=sorted(hours), factor=None,
-                minimum_energy_kwh=min_kwh, max_grid_kwh=None,
-                explanation=f"Mock: battery reserve {min_kwh} kWh for hours {sorted(hours)}",
-            ))
-
-        elif any(k in note_lower for k in ("no", "not", "avoid", "stop", "don't")) and "charg" in note_lower:
-            hours = _mock_extract_hours(note_lower) or list(range(17, 21))
-            interpretations.append(LLMNoteInterpretation(
-                note_index=i, applies=True, directive_type="no_charge_window",
-                hours=sorted(hours), factor=None,
-                minimum_energy_kwh=None, max_grid_kwh=None,
-                explanation=f"Mock: no-charge window for hours {sorted(hours)}",
-            ))
-
-        elif any(k in note_lower for k in ("no", "not", "avoid")) and "discharg" in note_lower:
-            hours = _mock_extract_hours(note_lower) or list(range(22, 24))
+        # 1. no_discharge_window (checked before charge to avoid substring collision)
+        if "discharg" in note_lower and any(k in note_lower for k in ("no", "not", "avoid", "stop", "don't", "prevent")):
+            hours = _mock_extract_hours(note_lower)
             interpretations.append(LLMNoteInterpretation(
                 note_index=i, applies=True, directive_type="no_discharge_window",
-                hours=sorted(hours), factor=None,
-                minimum_energy_kwh=None, max_grid_kwh=None,
+                hours=sorted(hours), factor=None, minimum_energy_kwh=None, max_grid_kwh=None,
                 explanation=f"Mock: no-discharge window for hours {sorted(hours)}",
             ))
 
-        elif "grid" in note_lower and any(k in note_lower for k in ("cap", "max", "limit", "restrict")):
-            kwh_m = re.search(r"(\d+(?:\.\d+)?)\s*kwh", note_lower)
-            max_grid = float(kwh_m.group(1)) if kwh_m else 50.0
-            hours = _mock_extract_hours(note_lower) or list(range(17, 21))
+        # 2. no_charge_window
+        elif (re.search(r"\bcharg\w*", note_lower) and not re.search(r"\bdischarg", note_lower)) and any(
+            k in note_lower for k in ("isolated", "unavailable", "disabled", "no", "not", "avoid", "stop", "don't")
+        ):
+            hours = _mock_extract_hours(note_lower)
+            interpretations.append(LLMNoteInterpretation(
+                note_index=i, applies=True, directive_type="no_charge_window",
+                hours=sorted(hours), factor=None, minimum_energy_kwh=None, max_grid_kwh=None,
+                explanation=f"Mock: no-charge window for hours {sorted(hours)}",
+            ))
+
+        # 3. solar_reduction
+        elif "solar" in note_lower and any(
+            k in note_lower for k in ("reduc", "curtail", "limit", "lower", "wash", "clean", "cloud", "half", "roughly", "usable solar")
+        ):
+            hours = _mock_extract_hours(note_lower)
+            if "half" in note_lower:
+                factor = 0.5
+            elif re.search(r"roughly\s*(\d+(?:\.\d+)?)\s*%", note_lower):
+                m = re.search(r"roughly\s*(\d+(?:\.\d+)?)\s*%", note_lower)
+                factor = float(m.group(1)) / 100.0
+            elif re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:of\s*(?:the\s*)?forecast|usable)", note_lower):
+                m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*(?:of\s*(?:the\s*)?forecast|usable)", note_lower)
+                factor = float(m.group(1)) / 100.0
+            elif re.search(r"(\d+(?:\.\d+)?)\s*%\s*reduction", note_lower):
+                m = re.search(r"(\d+(?:\.\d+)?)\s*%\s*reduction", note_lower)
+                factor = 1.0 - float(m.group(1)) / 100.0
+            elif re.search(r"reduc\w*\s*(?:solar\s*)?by\s*(\d+(?:\.\d+)?)\s*%", note_lower):
+                m = re.search(r"reduc\w*\s*(?:solar\s*)?by\s*(\d+(?:\.\d+)?)\s*%", note_lower)
+                factor = 1.0 - float(m.group(1)) / 100.0
+            else:
+                factor = 0.5
+
+            factor = round(max(0.0, min(1.0, factor)), 4)
+            interpretations.append(LLMNoteInterpretation(
+                note_index=i, applies=True, directive_type="solar_reduction",
+                hours=sorted(hours), factor=factor,
+                minimum_energy_kwh=None, max_grid_kwh=None,
+                explanation=f"Mock: solar reduction factor={factor} for hours {sorted(hours)}",
+            ))
+
+        # 4. minimum_battery_reserve
+        elif "battery" in note_lower and any(
+            k in note_lower for k in ("minimum", "reserve", "at least", "maintain", "remain", "stored")
+        ):
+            hours = _mock_extract_hours(note_lower)
+            m_pct = re.search(r"(\d+(?:\.\d+)?)\s*%\s*of\s*(?:the\s*)?battery\s*capacity", note_lower)
+            if m_pct:
+                min_kwh = (float(m_pct.group(1)) / 100.0) * 200.0
+            else:
+                m_kwh = re.search(r"(\d+(?:\.\d+)?)\s*kwh", note_lower)
+                min_kwh = float(m_kwh.group(1)) if m_kwh else 20.0
+
+            interpretations.append(LLMNoteInterpretation(
+                note_index=i, applies=True, directive_type="minimum_battery_reserve",
+                hours=sorted(hours), factor=None,
+                minimum_energy_kwh=round(min_kwh, 2), max_grid_kwh=None,
+                explanation=f"Mock: battery reserve {min_kwh} kWh for hours {sorted(hours)}",
+            ))
+
+        # 5. max_grid_window
+        elif any(k in note_lower for k in ("grid", "feeder", "transformer", "substation")) and any(
+            k in note_lower for k in ("cap", "max", "limit", "restrict", "exceed", "stay at or below", "below")
+        ):
+            hours = _mock_extract_hours(note_lower)
+            m_kwh = re.search(r"(\d+(?:\.\d+)?)\s*kwh", note_lower)
+            max_grid = float(m_kwh.group(1)) if m_kwh else 50.0
             interpretations.append(LLMNoteInterpretation(
                 note_index=i, applies=True, directive_type="max_grid_window",
                 hours=sorted(hours), factor=None,
-                minimum_energy_kwh=None, max_grid_kwh=max_grid,
+                minimum_energy_kwh=None, max_grid_kwh=round(max_grid, 2),
                 explanation=f"Mock: max grid {max_grid} kWh for hours {sorted(hours)}",
             ))
 
+        # 6. no_op
         else:
             interpretations.append(LLMNoteInterpretation(
                 note_index=i, applies=False, directive_type="no_op",
@@ -302,19 +335,32 @@ def _mock_interpret(notes: list[str]) -> LLMResponse:
 
 
 def _mock_extract_hours(text: str) -> list[int]:
-    """Extract hour range from text like '8 am to 12 pm' or '5 PM to 9 PM'."""
+    """Extract hour range from text like 'noon until 2 PM', '11 AM and 2 PM', '2 AM until 5 AM', etc."""
     hour_map = {
-        "12 am": 0, "1 am": 1, "2 am": 2, "3 am": 3, "4 am": 4, "5 am": 5,
+        "12 am": 0, "midnight": 0, "1 am": 1, "2 am": 2, "3 am": 3, "4 am": 4, "5 am": 5,
         "6 am": 6, "7 am": 7, "8 am": 8, "9 am": 9, "10 am": 10, "11 am": 11,
-        "12 pm": 12, "1 pm": 13, "2 pm": 14, "3 pm": 15, "4 pm": 16,
+        "12 pm": 12, "noon": 12, "1 pm": 13, "2 pm": 14, "3 pm": 15, "4 pm": 16,
         "5 pm": 17, "6 pm": 18, "7 pm": 19, "8 pm": 20, "9 pm": 21,
         "10 pm": 22, "11 pm": 23,
     }
-    pattern = r"(\d{1,2}\s*(?:am|pm))\s*(?:to|-)\s*(\d{1,2}\s*(?:am|pm))"
-    m = re.search(pattern, text, re.IGNORECASE)
+    text_norm = re.sub(r"\bnoon\b", "12 pm", text, flags=re.IGNORECASE)
+    text_norm = re.sub(r"\bmidnight\b", "12 am", text_norm, flags=re.IGNORECASE)
+
+    pattern = r"(?:between|from)?\s*(\d{1,2}(?::00)?\s*(?:am|pm)?)\s*(?:to|until|-|and)\s*(\d{1,2}(?::00)?\s*(?:am|pm))"
+    m = re.search(pattern, text_norm, re.IGNORECASE)
     if m:
-        s_str = re.sub(r"\s+", " ", m.group(1).lower().strip())
-        e_str = re.sub(r"\s+", " ", m.group(2).lower().strip())
+        s_raw = m.group(1).lower().strip()
+        e_raw = m.group(2).lower().strip()
+        if "am" not in s_raw and "pm" not in s_raw:
+            val = int(s_raw.split(":")[0])
+            end_val = int(e_raw.split()[0].split(":")[0])
+            if "pm" in e_raw:
+                s_raw = f"{val} am" if val > end_val and val != 12 else f"{val} pm"
+            else:
+                s_raw = f"{val} am"
+
+        s_str = re.sub(r"\s+", " ", s_raw)
+        e_str = re.sub(r"\s+", " ", e_raw)
         start = hour_map.get(s_str)
         end = hour_map.get(e_str)
         if start is not None and end is not None:

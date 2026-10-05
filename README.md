@@ -168,7 +168,15 @@ pytest tests/test_api.py -v          # Full HTTP endpoint validation
 
 Run test suite on official benchmark cases:
 ```bash
+# In-process LLM semantic accuracy evaluation:
 python evaluate_accuracy.py
+
+# End-to-end API evaluation against local or deployed base URL:
+python3 main.py --base-url http://localhost:8000
+python3 main.py --base-url https://your-deployment.vercel.app
+
+# Start the local FastAPI server directly:
+python3 main.py --serve
 ```
 
 ---
