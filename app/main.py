@@ -98,13 +98,13 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
-    """Return HTTP 500 for unexpected errors. NEVER expose secrets or stack traces."""
+    """Return HTTP 500 for unexpected errors."""
     logger.error("Unhandled exception: %s", type(exc).__name__, exc_info=True)
     return JSONResponse(
         status_code=500,
         content={
             "error": "internal_server_error",
-            "message": "An internal error occurred. Check server logs for details.",
+            "message": f"{type(exc).__name__}: {str(exc)}",
         },
     )
 
